@@ -7,11 +7,18 @@ export function useRecognition() {
   const [recognitionState, setRecognitionState] =
     useState<RecognitionState>("idle");
 
-  const startRecognitionProxy = () => {
+  const startRecognitionProxy: () => void = () => {
     startRecognition(() => {
       setRecognitionState("listening");
     });
   };
 
-  return [recognitionState, startRecognitionProxy, endRecognition];
+  const endRecognitionProxy = (onRecognitionEnd: (text: string) => void) => {
+    endRecognition((text) => {
+      setRecognitionState("idle");
+      onRecognitionEnd(text);
+    });
+  };
+
+  return [recognitionState, startRecognitionProxy, endRecognitionProxy];
 }
