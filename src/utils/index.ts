@@ -1,3 +1,3 @@
-export * from "./chat";
-export * from "./readaloud";
-export * from "./regonition";
+// export * from "./chat";
+// export * from "./readaloud";
+export * from "./recognition";
