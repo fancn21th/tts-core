@@ -1,24 +1,17 @@
 import { useState } from "react";
-import { startRecognition, endRecognition } from "../utils";
-import type { RecognitionState } from "../utils";
+import { ask } from "../utils";
+import type { ChatState } from "../utils";
 
 // state manager & proxy
 export function useChat() {
-  const [recognitionState, setRecognitionState] =
-    useState<RecognitionState>("idle");
+  const [chatState, setChatState] = useState<ChatState>("idle");
 
-  const startRecognitionProxy: () => void = () => {
-    startRecognition(() => {
-      setRecognitionState("listening");
-    });
+  const askProxy: (question: string) => Promise<string> = async (question) => {
+    setChatState("progressing");
+    const answer = await ask(question);
+    setChatState("idle");
+    return answer;
   };
 
-  const endRecognitionProxy = (onRecognitionEnd: (text: string) => void) => {
-    endRecognition((text) => {
-      setRecognitionState("idle");
-      onRecognitionEnd(text);
-    });
-  };
-
-  return [recognitionState, startRecognitionProxy, endRecognitionProxy];
+  return [chatState, askProxy];
 }
