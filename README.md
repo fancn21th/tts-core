@@ -1,30 +1,31 @@
-# React + TypeScript + Vite
+# 语音识别与语音合成 抽象逻辑部分
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 基本设计思想
 
-Currently, two official plugins are available:
+- 目的
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+  抽象出 "语音识别与语音合成" 通用的 主要业务流程部分 (覆盖 移动端 和 PC 端).
 
-## Expanding the ESLint configuration
+  底层实现用模拟代码实现 方便不同端替换合适的实现逻辑.
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+- 设计
 
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
-```
-
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+  ```
+  ├── App.css
+  ├── App.tsx
+  ├── components
+  │   └── Chats.tsx           // 业务流程部分
+  ├── hooks                   // 业务逻辑抽象部分
+  │   ├── index.ts
+  │   ├── useChat.ts
+  │   ├── useReadAloud.ts
+  │   └── useRecognition.ts
+  ├── index.css
+  ├── main.tsx
+  ├── utils                   // 底层实现部分
+  │   ├── chat.ts
+  │   ├── helper.ts
+  │   ├── index.ts
+  │   ├── readaloud.ts
+  │   └── recognition.ts
+  ```

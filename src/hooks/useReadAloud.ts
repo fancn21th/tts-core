@@ -11,8 +11,10 @@ export function useReadAloud() {
     onEnd
   ) => {
     setChatState("reading");
-    await read(text, onEnd);
-    setChatState("idle");
+    await read(text, () => {
+      setChatState("idle");
+      onEnd();
+    });
   };
 
   return [readState, readProxy];

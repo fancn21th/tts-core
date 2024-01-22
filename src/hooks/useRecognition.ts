@@ -13,11 +13,17 @@ export function useRecognition() {
     });
   };
 
-  const endRecognitionProxy = (onRecognitionEnd: (text: string) => void) => {
-    endRecognition((text) => {
-      setRecognitionState("idle");
+  const endRecognitionProxy: (
+    onRecognitionEnd: (text: string) => void
+  ) => void = (onRecognitionEnd) => {
+    setRecognitionState("processing");
+
+    const onEnd = (text: string) => {
       onRecognitionEnd(text);
-    });
+      setRecognitionState("idle");
+    };
+
+    endRecognition(onEnd);
   };
 
   return [recognitionState, startRecognitionProxy, endRecognitionProxy];
