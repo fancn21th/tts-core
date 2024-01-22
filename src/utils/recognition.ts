@@ -1,11 +1,13 @@
 export type RecognitionState = "idle" | "listening";
 
-export const startRecognition = (onStart: () => void) => {
+export const startRecognition: (onStart: () => void) => void = (onStart) => {
   // 实现唤起语音识别的逻辑
   onStart();
 };
 
-export const endRecognition = (onEnd: (text: string) => void) => {
+export const endRecognition: (onEnd: (text: string) => void) => void = (
+  onEnd
+) => {
   // 模拟语音识别到的内容
   // 在实际场景中 语音识别和语音转文字是2个独立的步骤 因此这里的实现会涉及到 异步操作
 

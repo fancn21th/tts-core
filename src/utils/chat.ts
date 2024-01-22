@@ -1,6 +1,6 @@
-export type ChatState = "idle" | "progressing";
+import { delay } from "./helper";
 
-const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+export type ChatState = "idle" | "progressing";
 
 export const ask: (question: string) => Promise<string> = async (
   question: string
