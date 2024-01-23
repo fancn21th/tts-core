@@ -3,7 +3,11 @@ import { startRecognition, endRecognition } from "../utils";
 import type { RecognitionState } from "../utils";
 
 // state manager & proxy
-export function useRecognition() {
+export function useRecognition(): [
+  RecognitionState,
+  () => void,
+  (onRecognitionEnd: (text: string) => void) => void
+] {
   const [recognitionState, setRecognitionState] =
     useState<RecognitionState>("idle");
 
