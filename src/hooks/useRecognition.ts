@@ -22,34 +22,33 @@ export function useRecognition(): [
     onRecognitionEnd: (text: string) => void
   ) => () => void;
 
-  const endRecognitionProxy: EndRecognitionProxy =
-    useCallback<EndRecognitionProxy>((onRecognitionEnd) => {
-      setRecognitionState("voiceProcessing");
+  const endRecognitionProxy: EndRecognitionProxy = (onRecognitionEnd) => {
+    setRecognitionState("voiceProcessing");
 
-      const onRecordEnd = () => {
-        setRecognitionState("voice2TextProcessing");
-      };
+    const onRecordEnd = () => {
+      setRecognitionState("voice2TextProcessing");
+    };
 
-      const onVoice2TextEnd = (text: string) => {
+    const onVoice2TextEnd = (text: string) => {
+      setRecognitionState("idle");
+      onRecognitionEnd(text);
+    };
+
+    // 被代理的取消函数
+    const cancel = endRecognition({ onRecordEnd, onVoice2TextEnd });
+
+    // 取消函数代理
+    return () => {
+      // TODO: 避免重复取消
+      setRecognitionState("cancelled");
+
+      setTimeout(() => {
         setRecognitionState("idle");
-        onRecognitionEnd(text);
-      };
+      }, 2000);
 
-      // 被代理的取消函数
-      const cancel = endRecognition({ onRecordEnd, onVoice2TextEnd });
-
-      // 取消函数代理
-      return () => {
-        // TODO: 避免重复取消
-        setRecognitionState("cancelled");
-
-        setTimeout(() => {
-          setRecognitionState("idle");
-        }, 2000);
-
-        cancel();
-      };
-    }, []);
+      cancel();
+    };
+  };
 
   return [recognitionState, startRecognitionProxy, endRecognitionProxy];
 }
