@@ -38,3 +38,13 @@
     - 日志都在这里打印 因为这里是实际调用 TTS 能力的地方
   - `components` 目录下的文件是 业务流程部分
     - 主业务流程都在这里实现
+
+- 可取消
+
+  - 原理
+
+    [make-cancellable-promise 测试用例](https://github.com/wojtekmaj/make-cancellable-promise/blob/main/src/index.spec.ts)
+
+  - 可取消的操作都在 `utils` 目录下的文件中实现
+
+  - 不可使用 `async await` 语法, 需要回归 `Promise` 的原生写法
