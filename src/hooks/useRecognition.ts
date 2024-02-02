@@ -17,23 +17,36 @@ export function useRecognition(): [
     });
   };
 
+  // TODO: the state of the recognition process is not that accurate, this is just for demonstration purpose only
   const endRecognitionProxy: (
     onRecognitionEnd: (text: string) => void
   ) => () => void = (onRecognitionEnd) => {
-    setRecognitionState("processing");
+    setRecognitionState("voiceProcessing");
 
-    const onEnd = (text: string) => {
-      onRecognitionEnd(text);
+    const onRecordEnd = () => {
+      setRecognitionState("voice2TextProcessing");
+    };
+
+    const onVoice2TextEnd = (text: string) => {
       setRecognitionState("idle");
+      onRecognitionEnd(text);
     };
 
     // 被代理的取消函数
-    const cancel = endRecognition(onEnd);
+    const cancel = endRecognition({ onRecordEnd, onVoice2TextEnd });
 
     // 取消函数代理
     return () => {
-      cancel();
-      setRecognitionState("idle");
+      // 避免重复取消
+      if (recognitionState !== "idle") {
+        setRecognitionState("cancelled");
+
+        setTimeout(() => {
+          setRecognitionState("idle");
+        }, 2000);
+
+        cancel();
+      }
     };
   };
 

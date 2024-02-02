@@ -1,7 +1,12 @@
 import makeCancellable from "make-cancellable-promise";
 import { delay, cancelRunningTask } from "./helper";
 
-export type RecognitionState = "idle" | "listening" | "processing";
+export type RecognitionState =
+  | "idle" // 空闲
+  | "listening" // 录音中
+  | "voiceProcessing" // 录音处理中
+  | "voice2TextProcessing" // 录音转文字处理中
+  | "cancelled"; // 录音转文字取消
 
 export const startRecognition: (onStart: () => void) => void = (onStart) => {
   // 实现唤起语音识别的逻辑
@@ -32,9 +37,10 @@ const voice2Text = async (voiceId: string) => {
   return translateResult;
 };
 
-export const endRecognition: (onEnd: (text: string) => void) => () => void = (
-  onEnd
-) => {
+export const endRecognition: (option: {
+  onRecordEnd: () => void;
+  onVoice2TextEnd: (text: string) => void;
+}) => () => void = ({ onRecordEnd, onVoice2TextEnd }) => {
   // 模拟语音识别到的内容
   // 在实际场景中 语音识别和语音转文字是2个独立的步骤 因此这里的实现会涉及到 异步操作
 
@@ -50,12 +56,13 @@ export const endRecognition: (onEnd: (text: string) => void) => () => void = (
   // 不可取消 任务
   stopRecord()
     .then((voiceId) => {
+      onRecordEnd();
       // 可取消 任务
       cancellable = makeCancellable(voice2Text(voiceId));
 
       cancellable.promise
         .then((translateResult) => {
-          onEnd(translateResult);
+          onVoice2TextEnd(translateResult);
         })
         .catch((error) => {
           console.error(error);

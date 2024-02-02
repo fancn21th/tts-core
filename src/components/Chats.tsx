@@ -37,14 +37,18 @@ const Chats: React.FC = () => {
       {/* 语音识别 状态 */}
       <div className="recognition-state">
         {recognitionState === "idle"
-          ? "语音识别 is idle"
+          ? "语音识别 空闲"
           : recognitionState === "listening"
-          ? "语音识别 is listening ..."
-          : "语音识别 is processing ..."}
+          ? "语音识别 录音中..."
+          : recognitionState === "voiceProcessing"
+          ? "语音识别 语音处理中..."
+          : recognitionState === "voice2TextProcessing"
+          ? "语音识别 语音转文字 (可以取消)..."
+          : "语音识别 语音取消"}
       </div>
       {/* GPT 状态 */}
       <div className="gpt-state">
-        {chatState === "idle" ? "GPT is idle" : "GPT is progressing ..."}
+        {chatState === "idle" ? "GPT 空闲" : "GPT 正在处理中 ..."}
       </div>
       {/* 语音合成 状态 */}
       <div className="read-state">
@@ -54,11 +58,11 @@ const Chats: React.FC = () => {
       <div className="action-bar">
         {/* 触发录音开始 与 结束录音 */}
         <button className="start-button" onClick={onClick}>
-          {recognitionState === "idle" ? "Start" : "Stop"}
+          {recognitionState === "idle" ? "开始录音" : "停止录音"}
         </button>
         {/* 取消按钮 */}
         <button className="stop-button" onClick={onStopClick}>
-          Stop
+          中断流程
         </button>
       </div>
     </div>
