@@ -26,6 +26,7 @@ export function useRecognition(): [
     setRecognitionState("voiceProcessing");
 
     const onRecordEnd = () => {
+      // 录音结束立即 设置状态为语音转文字处理中
       setRecognitionState("voice2TextProcessing");
     };
 

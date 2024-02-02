@@ -27,7 +27,8 @@ const Chats: React.FC = () => {
   };
 
   const onStopClick = () => {
-    if (cancelRecognitionRef.current) {
+    // 避免重复取消
+    if (cancelRecognitionRef.current && recognitionState !== "idle") {
       cancelRecognitionRef.current();
     }
   };
