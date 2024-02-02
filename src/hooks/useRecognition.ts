@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { startRecognition, endRecognition } from "../utils";
 import type { RecognitionState } from "../utils";
 
@@ -18,27 +18,29 @@ export function useRecognition(): [
   };
 
   // TODO: the state of the recognition process is not that accurate, this is just for demonstration purpose only
-  const endRecognitionProxy: (
+  type EndRecognitionProxy = (
     onRecognitionEnd: (text: string) => void
-  ) => () => void = (onRecognitionEnd) => {
-    setRecognitionState("voiceProcessing");
+  ) => () => void;
 
-    const onRecordEnd = () => {
-      setRecognitionState("voice2TextProcessing");
-    };
+  const endRecognitionProxy: EndRecognitionProxy =
+    useCallback<EndRecognitionProxy>((onRecognitionEnd) => {
+      setRecognitionState("voiceProcessing");
 
-    const onVoice2TextEnd = (text: string) => {
-      setRecognitionState("idle");
-      onRecognitionEnd(text);
-    };
+      const onRecordEnd = () => {
+        setRecognitionState("voice2TextProcessing");
+      };
 
-    // 被代理的取消函数
-    const cancel = endRecognition({ onRecordEnd, onVoice2TextEnd });
+      const onVoice2TextEnd = (text: string) => {
+        setRecognitionState("idle");
+        onRecognitionEnd(text);
+      };
 
-    // 取消函数代理
-    return () => {
-      // 避免重复取消
-      if (recognitionState !== "idle") {
+      // 被代理的取消函数
+      const cancel = endRecognition({ onRecordEnd, onVoice2TextEnd });
+
+      // 取消函数代理
+      return () => {
+        // TODO: 避免重复取消
         setRecognitionState("cancelled");
 
         setTimeout(() => {
@@ -46,9 +48,8 @@ export function useRecognition(): [
         }, 2000);
 
         cancel();
-      }
-    };
-  };
+      };
+    }, []);
 
   return [recognitionState, startRecognitionProxy, endRecognitionProxy];
 }
