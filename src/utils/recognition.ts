@@ -1,4 +1,5 @@
-import { delay } from "./helper";
+import makeCancellable from "make-cancellable-promise";
+import { delay, cancelRunningTask } from "./helper";
 
 export type RecognitionState = "idle" | "listening" | "processing";
 
@@ -7,7 +8,31 @@ export const startRecognition: (onStart: () => void) => void = (onStart) => {
   onStart();
 };
 
-export const endRecognition: (onEnd: (text: string) => void) => void = async (
+// 停止录音的模拟实现
+const stopRecord = async () => {
+  const voiceId: string = "123";
+
+  // 模拟录音结束的处理逻辑
+  console.log("录音结束处理中 开始...");
+  await delay(2000);
+  console.log("录音结束处理中 结束...");
+
+  return voiceId;
+};
+
+// 语音转文字的模拟实现
+const voice2Text = async (voiceId: string) => {
+  const translateResult: string = "武汉天气不错啊";
+
+  // 模拟录音结束的处理逻辑
+  console.log(`录音 ${voiceId} 转文字中 开始...`);
+  await delay(4000);
+  console.log(`录音 ${voiceId} 转文字中 结束...`);
+
+  return translateResult;
+};
+
+export const endRecognition: (onEnd: (text: string) => void) => () => void = (
   onEnd
 ) => {
   // 模拟语音识别到的内容
@@ -17,10 +42,31 @@ export const endRecognition: (onEnd: (text: string) => void) => void = async (
   // 2. 将语音识别的内容转换成文字
   // 3. 回掉函数返回转换后的文字
 
-  // 模拟录音 与 文本识别
-  console.log("语音识别中...");
+  let cancellable: {
+    promise: Promise<string>;
+    cancel(): void;
+  } | null = null;
 
-  await delay(2000);
+  // 不可取消 任务
+  stopRecord()
+    .then((voiceId) => {
+      // 可取消 任务
+      cancellable = makeCancellable(voice2Text(voiceId));
 
-  onEnd("今天天气不错啊");
+      cancellable.promise
+        .then((translateResult) => {
+          onEnd(translateResult);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+
+  return () => {
+    console.log(`录音转文字中被取消`);
+    cancelRunningTask(cancellable);
+  };
 };

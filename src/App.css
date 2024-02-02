@@ -3,9 +3,16 @@
   height: 100svh;
 }
 
-.start-button {
+.action-bar {
+  display: flex;
   position: absolute;
   bottom: 0;
   width: 100%;
   height: 100px;
+}
+
+.start-button,
+.stop-button {
+  flex-grow: 1;
+  height: 100%;
 }
