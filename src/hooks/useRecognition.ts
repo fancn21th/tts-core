@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { startRecognition, endRecognition } from "../utils";
 import type { RecognitionState } from "../utils";
 
@@ -10,6 +10,13 @@ export function useRecognition(): [
 ] {
   const [recognitionState, setRecognitionState] =
     useState<RecognitionState>("idle");
+
+  const recognitionStateRef = useRef<RecognitionState>("idle");
+
+  // 解决 stale closure 问题
+  useEffect(() => {
+    recognitionStateRef.current = recognitionState;
+  }, [recognitionState]);
 
   const startRecognitionProxy: () => void = () => {
     startRecognition(() => {
@@ -40,14 +47,17 @@ export function useRecognition(): [
 
     // 取消函数代理
     return () => {
-      // TODO: 避免重复取消
-      setRecognitionState("cancelled");
+      const state = recognitionStateRef.current;
 
-      setTimeout(() => {
-        setRecognitionState("idle");
-      }, 2000);
+      if (state === "voice2TextProcessing") {
+        setRecognitionState("cancelled");
 
-      cancel();
+        setTimeout(() => {
+          setRecognitionState("idle");
+        }, 2000);
+
+        cancel();
+      }
     };
   };
 
