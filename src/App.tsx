@@ -1,9 +1,11 @@
 import React from "react";
-import Chats from "./components/Chats";
+import { RouterProvider } from "react-router-dom";
+import { router } from "./router";
+
 import "./App.css";
 
 const App: React.FC = () => {
-  return <Chats />;
+  return <RouterProvider router={router} fallbackElement={<p>Loading...</p>} />;
 };
 
 export default App;
