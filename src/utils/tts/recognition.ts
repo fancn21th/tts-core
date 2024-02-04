@@ -8,7 +8,9 @@ export type RecognitionState =
   | "voice2TextProcessing" // 录音转文字处理中
   | "cancelled"; // 录音转文字取消
 
-export const startRecognition: (onStart: () => void) => void = (onStart) => {
+export type StartRecognition = (onStart: () => void) => void;
+
+export const startRecognition: StartRecognition = (onStart) => {
   // 实现唤起语音识别的逻辑
   onStart();
 };
@@ -37,10 +39,15 @@ const voice2Text = async (voiceId: string) => {
   return translateResult;
 };
 
-export const endRecognition: (option: {
+export type EndRecognition = (option: {
   onRecordEnd: () => void;
   onVoice2TextEnd: (text: string) => void;
-}) => () => void = ({ onRecordEnd, onVoice2TextEnd }) => {
+}) => () => void;
+
+export const endRecognition: EndRecognition = ({
+  onRecordEnd,
+  onVoice2TextEnd,
+}) => {
   // 模拟语音识别到的内容
   // 在实际场景中 语音识别和语音转文字是2个独立的步骤 因此这里的实现会涉及到 异步操作
 

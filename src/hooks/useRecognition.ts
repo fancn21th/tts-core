@@ -1,5 +1,8 @@
 import { useState, useRef, useEffect } from "react";
-import { startRecognition, endRecognition } from "../utils";
+import {
+  startRecognitionProxy as startRecognition,
+  endRecognitionProxy as endRecognition,
+} from "../utils";
 import type { RecognitionState } from "../utils";
 
 // state manager & proxy
