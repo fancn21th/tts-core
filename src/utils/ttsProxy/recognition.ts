@@ -32,25 +32,25 @@ export const registerRecognition: () => void = () => {
 };
 
 export class RecognitionProxy {
-  private _onStart: () => void;
-  private _onRecordEnd: () => void;
-  private _onVoice2TextEnd: (text: string) => void;
+  private _onChildStart: () => void;
+  private _onChildRecordEnd: () => void;
+  private _onChildVoice2TextEnd: (text: string) => void;
 
   constructor() {
-    this._onStart = () => {
+    this._onChildStart = () => {
       console.log("_onStart not defined");
     };
-    this._onRecordEnd = () => {
+    this._onChildRecordEnd = () => {
       console.log("_onRecordEnd not defined");
     };
-    this._onVoice2TextEnd = () => {
+    this._onChildVoice2TextEnd = () => {
       console.log("_onVoice2TextEnd not defined");
     };
   }
 
   startRecognition(onStart: () => void): void {
     window.postMessage({ type: "startRecognition" }, "*");
-    this._onStart = onStart;
+    this._onChildStart = onStart;
   }
 
   endRecognition(option: {
@@ -58,8 +58,8 @@ export class RecognitionProxy {
     onVoice2TextEnd: (text: string) => void;
   }): () => void {
     window.postMessage({ type: "endRecognition" }, "*");
-    this._onRecordEnd = option.onRecordEnd;
-    this._onVoice2TextEnd = option.onVoice2TextEnd;
+    this._onChildRecordEnd = option.onRecordEnd;
+    this._onChildVoice2TextEnd = option.onVoice2TextEnd;
 
     return () => {
       console.log(`录音转文字中被取消`);
@@ -67,32 +67,40 @@ export class RecognitionProxy {
   }
 
   register() {
-    const onStart = () => {
-      this._onStart();
+    /**
+     *  编程模型解释
+     *    通过闭包的方式, 延迟了对真正的能力调用方法的调用
+     */
+    const onParentStart = () => {
+      window.postMessage({ type: "startRecognitionComplete" }, "*");
     };
 
-    const onRecordEnd = () => {
-      this._onRecordEnd();
+    const onParentRecordEnd = () => {
+      this._onChildRecordEnd && this._onChildRecordEnd();
     };
 
-    const onVoice2TextEnd = (text: string) => {
-      this._onVoice2TextEnd(text);
+    const onParentVoice2TextEnd = (text: string) => {
+      this._onChildVoice2TextEnd && this._onChildVoice2TextEnd(text);
     };
 
-    // 父亲窗口注册监听
-    // 孩子窗口注册监听
+    const onChildStart = () => {
+      this._onChildStart && this._onChildStart();
+    };
+
     window.addEventListener("message", function (event: MessageEvent) {
       // start recognition
       const type = event.data.type;
       if (type === "startRecognition") {
         // 调用被代理的能力
-        startRecognition(onStart);
+        startRecognition(onParentStart);
       } else if (type === "endRecognition") {
         // 调用被代理的能力
         endRecognition({
-          onRecordEnd,
-          onVoice2TextEnd,
+          onRecordEnd: onParentRecordEnd,
+          onVoice2TextEnd: onParentVoice2TextEnd,
         });
+      } else if (type === "startRecognitionComplete") {
+        onChildStart();
       }
     });
   }
