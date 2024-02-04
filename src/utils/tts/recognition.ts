@@ -1,5 +1,5 @@
 import makeCancellable from "make-cancellable-promise";
-import { delay, cancelRunningTask } from "./helper";
+import { delay, cancelRunningTask } from "../helper";
 
 export type RecognitionState =
   | "idle" // 空闲

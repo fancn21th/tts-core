@@ -1,4 +1,4 @@
-import { delay } from "./helper";
+import { delay } from "../helper";
 
 export type ReadState = "idle" | "reading";
 

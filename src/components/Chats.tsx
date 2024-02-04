@@ -57,6 +57,7 @@ const Chats: React.FC = () => {
         {Object.values(recognitionStateMap).map((val) => {
           return (
             <span
+              key={val}
               className={
                 val === recognitionStateMap[recognitionState] ? "highlight" : ""
               }
@@ -71,6 +72,7 @@ const Chats: React.FC = () => {
         {Object.values(chatStateMap).map((val) => {
           return (
             <span
+              key={val}
               className={val === chatStateMap[chatState] ? "highlight" : ""}
             >
               {val}
@@ -83,6 +85,7 @@ const Chats: React.FC = () => {
         {Object.values(readStateMap).map((val) => {
           return (
             <span
+              key={val}
               className={val === readStateMap[readState] ? "highlight" : ""}
             >
               {val}
