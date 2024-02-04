@@ -7,7 +7,7 @@ export function useChat(): [ChatState, (question: string) => Promise<string>] {
   const [chatState, setChatState] = useState<ChatState>("idle");
 
   const askProxy: (question: string) => Promise<string> = async (question) => {
-    setChatState("progressing");
+    setChatState("processing");
     const answer = await ask(question);
     setChatState("idle");
     return answer;
