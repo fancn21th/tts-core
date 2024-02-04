@@ -67,7 +67,7 @@ const Chats: React.FC = () => {
         })}
       </div>
       {/* GPT 状态 */}
-      <div className="gpt-state">
+      <div className="chat-state">
         {Object.values(chatStateMap).map((val) => {
           return (
             <span

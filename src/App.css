@@ -20,3 +20,9 @@
 .highlight {
   background-color: yellow;
 }
+
+.recognition-state span,
+.chat-state span,
+.read-state span {
+  padding: 0 10px;
+}
