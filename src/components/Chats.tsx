@@ -12,6 +12,7 @@ const recognitionStateMap = {
 const chatStateMap = {
   idle: "空闲",
   processing: "GPT 思考中...",
+  cancelled: "取消",
 };
 
 const readStateMap = {
@@ -29,6 +30,13 @@ const Chats: React.FC = () => {
     );
   });
 
+  // 取消聊天
+  const cancelCompletionRef = useRef<() => void>(() => {
+    console.log(
+      "cancelCompletionRef.current is not defined 没有可以取消的动作"
+    );
+  });
+
   const [chatState, ask] = useChat();
 
   const [readState, read] = useReadAloud();
@@ -37,9 +45,10 @@ const Chats: React.FC = () => {
     if (recognitionState === "idle") {
       startRecognition();
     } else if (recognitionState === "listening") {
-      cancelRecognitionRef.current = stopRecognition(async (result: string) => {
-        const answer = await ask(result);
-        await read(answer, () => {});
+      cancelRecognitionRef.current = stopRecognition((result: string) => {
+        cancelCompletionRef.current = ask(result, (answer) => {
+          read(answer, () => {});
+        });
       });
     }
   };
@@ -48,6 +57,10 @@ const Chats: React.FC = () => {
     if (cancelRecognitionRef.current) {
       cancelRecognitionRef.current();
     }
+  };
+
+  const onStopAnswerClick = () => {
+    cancelCompletionRef.current?.();
   };
 
   return (
@@ -103,6 +116,11 @@ const Chats: React.FC = () => {
         <button className="stop-button" onClick={onStopClick}>
           中断流程
         </button>
+        {chatState === "processing" && (
+          <button className="stop-button" onClick={onStopAnswerClick}>
+            停止思考/回答
+          </button>
+        )}
       </div>
     </div>
   );
