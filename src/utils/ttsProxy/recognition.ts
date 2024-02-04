@@ -5,7 +5,6 @@ let proxy: RecognitionProxy | null = null;
 export const startRecognitionProxy: (onStart: () => void) => void = (
   onStart
 ) => {
-  window.postMessage({ type: "startRecognition" }, "*");
   proxy?.startRecognition(onStart);
 };
 
@@ -22,7 +21,6 @@ export const endRecognitionProxy: EndRecognitionProxy = ({
     console.error("proxy is null");
     return () => {}; // Return an empty function when proxy is null
   }
-  window.postMessage({ type: "endRecognition" }, "*");
   return proxy.endRecognition({ onRecordEnd, onVoice2TextEnd });
 };
 
