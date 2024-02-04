@@ -1,6 +1,6 @@
 import { delay } from "./helper";
 
-export type ChatState = "idle" | "progressing";
+export type ChatState = "idle" | "processing";
 
 export const ask: (question: string) => Promise<string> = async (
   question: string

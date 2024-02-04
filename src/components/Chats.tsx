@@ -1,6 +1,24 @@
 import { useRef } from "react";
 import { useRecognition, useChat, useReadAloud } from "../hooks/";
 
+const recognitionStateMap = {
+  idle: "空闲",
+  listening: "录音中...",
+  voiceProcessing: "录音处理中...",
+  voice2TextProcessing: "录音转文字处理中 (可以取消)...",
+  cancelled: "录音转文字取消",
+};
+
+const chatStateMap = {
+  idle: "空闲",
+  processing: "GPT 思考中...",
+};
+
+const readStateMap = {
+  idle: "空闲",
+  reading: "文字打印中 | 语音播放中...",
+};
+
 const Chats: React.FC = () => {
   const [recognitionState, startRecognition, stopRecognition] =
     useRecognition();
@@ -36,23 +54,41 @@ const Chats: React.FC = () => {
     <div className="chats-container">
       {/* 语音识别 状态 */}
       <div className="recognition-state">
-        {recognitionState === "idle"
-          ? "语音识别 空闲"
-          : recognitionState === "listening"
-          ? "语音识别 录音中..."
-          : recognitionState === "voiceProcessing"
-          ? "语音识别 语音处理中..."
-          : recognitionState === "voice2TextProcessing"
-          ? "语音识别 语音转文字 (可以取消)..."
-          : "语音识别 语音取消"}
+        {Object.values(recognitionStateMap).map((val) => {
+          return (
+            <span
+              className={
+                val === recognitionStateMap[recognitionState] ? "highlight" : ""
+              }
+            >
+              {val}
+            </span>
+          );
+        })}
       </div>
       {/* GPT 状态 */}
       <div className="gpt-state">
-        {chatState === "idle" ? "GPT 空闲" : "GPT 正在处理中 ..."}
+        {Object.values(chatStateMap).map((val) => {
+          return (
+            <span
+              className={val === chatStateMap[chatState] ? "highlight" : ""}
+            >
+              {val}
+            </span>
+          );
+        })}
       </div>
       {/* 语音合成 状态 */}
       <div className="read-state">
-        {readState === "idle" ? "语音播放 is idle" : "语音正在播放 ..."}
+        {Object.values(readStateMap).map((val) => {
+          return (
+            <span
+              className={val === readStateMap[readState] ? "highlight" : ""}
+            >
+              {val}
+            </span>
+          );
+        })}
       </div>
       {/* 底部 */}
       <div className="action-bar">
