@@ -54,11 +54,9 @@ export function useRecognition(): [
 
       if (state === "voice2TextProcessing") {
         setRecognitionState("cancelled");
-
         setTimeout(() => {
           setRecognitionState("idle");
         }, 2000);
-
         cancel();
       }
     };

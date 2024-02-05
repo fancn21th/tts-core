@@ -44,6 +44,7 @@ export type EndRecognition = (option: {
   onVoice2TextEnd: (text: string) => void;
 }) => () => void;
 
+// 父容器正式停止录音
 export const endRecognition: EndRecognition = ({
   onRecordEnd,
   onVoice2TextEnd,
