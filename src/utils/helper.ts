@@ -6,3 +6,11 @@ export function cancelRunningTask(
 ) {
   if (runningTask && runningTask.cancel) runningTask.cancel();
 }
+
+export function IsParentWindow() {
+  return window.self === window.top;
+}
+
+export function IsChildWindow() {
+  return !IsParentWindow();
+}

@@ -1,4 +1,8 @@
-import type { StartRecognition, EndRecognition } from "../tts/recognition";
+import type {
+  StartRecognition,
+  EndRecognition,
+  RegisterRecognition,
+} from "../tts/recognition";
 import { RecognitionProxy } from "./RecognitionProxy";
 
 let proxy: RecognitionProxy | null = null;
@@ -18,7 +22,7 @@ export const endRecognitionProxy: EndRecognition = ({
   return proxy.endRecognition({ onRecordEnd, onVoice2TextEnd });
 };
 
-export const registerRecognition: () => void = () => {
+export const registerRecognitionProxy: RegisterRecognition = () => {
   if (!proxy) {
     proxy = new RecognitionProxy();
     proxy.register();

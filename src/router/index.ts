@@ -9,9 +9,11 @@ const routes = [
     Component: Home,
   },
   {
-    path: "/app",
+    path: "/detail",
     Component: App,
   },
 ];
 
-export const router = createBrowserRouter(routes);
+export const router = createBrowserRouter(routes, {
+  basename: "/sv/workweixin/",
+});
