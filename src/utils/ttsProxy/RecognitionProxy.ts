@@ -52,19 +52,27 @@ export class RecognitionProxy {
     };
 
     const onParentRecordEnd = () => {
-      this._onChildRecordEnd && this._onChildRecordEnd();
+      postMessage({ type: "recordEnd" }, "child");
     };
 
     const onParentVoice2TextEnd = (text: string) => {
-      this._onChildVoice2TextEnd && this._onChildVoice2TextEnd(text);
+      postMessage({ type: "voice2TextEnd", text }, "child");
     };
 
     const onChildStart = () => {
       this._onChildStartRecognition && this._onChildStartRecognition();
     };
 
+    const onChildRecordEnd = () => {
+      this._onChildRecordEnd && this._onChildRecordEnd();
+    };
+
+    const onChildVoice2TextEnd = (text: string) => {
+      this._onChildVoice2TextEnd && this._onChildVoice2TextEnd(text);
+    };
+
     if (IsChildWindow()) {
-      // // 父 -> 子
+      // 父 -> 子
       window.addEventListener("message", function (event: MessageEvent) {
         const eventType = event.data.type;
         if (!eventType) return;
@@ -72,13 +80,21 @@ export class RecognitionProxy {
         if (eventType === "startRecognitionAccepted") {
           onChildStart();
         }
+
+        if (eventType === "recordEnd") {
+          onChildRecordEnd();
+        }
+
+        if (eventType === "voice2TextEnd") {
+          onChildVoice2TextEnd(event.data.text);
+        }
       });
     }
 
     if (IsParentWindow()) {
       // 初始化 wx 能力
       registerRecognition();
-
+      // 子 -> 父
       window.addEventListener("message", function (event: MessageEvent) {
         const eventType = event.data.type;
         if (!eventType) return;

@@ -41,6 +41,7 @@ export function useRecognition(): [
     };
 
     const onVoice2TextEnd = (text: string) => {
+      alert(text);
       setRecognitionState("idle");
       onRecognitionEnd(text);
     };

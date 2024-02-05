@@ -1,5 +1,5 @@
 import makeCancellable from "make-cancellable-promise";
-import { delay, cancelRunningTask } from "../helper";
+import { cancelRunningTask } from "../helper";
 import { postData } from "../request";
 
 const CORPID = "";
@@ -23,26 +23,47 @@ export const startRecognition: StartRecognition = (onStart) => {
 
 // 停止录音的模拟实现
 const stopRecord = async () => {
-  const voiceId: string = "123";
+  const stopRecord = new Promise<string>((resolve, reject) => {
+    try {
+      wx.stopRecord({
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        success: function (res: { localId: any }) {
+          resolve(res.localId);
+        },
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
 
-  // 模拟录音结束的处理逻辑
-  console.log("录音结束处理中 开始...");
-  await delay(2000);
-  console.log("录音结束处理中 结束...");
+  const localId = await stopRecord;
 
-  return voiceId;
+  // TODO: 切换声道 hack
+  wx.playVoice({
+    localId,
+  });
+
+  return localId;
 };
 
 // 语音转文字的模拟实现
-const voice2Text = async (voiceId: string) => {
-  const translateResult: string = "武汉天气不错啊";
+const voice2Text = async (localId: string) => {
+  const translateResult = new Promise<string>((resolve, reject) => {
+    try {
+      wx.translateVoice({
+        localId, // 需要识别的音频的本地Id，由录音相关接口获得，音频时长不能超过60秒
+        isShowProgressTips: 1, // 默认为1，显示进度提示
+        success: function (res: { translateResult: string }) {
+          alert(res.translateResult);
+          resolve(res.translateResult); // 语音识别的结果
+        },
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
 
-  // 模拟录音结束的处理逻辑
-  console.log(`录音 ${voiceId} 转文字中 开始...`);
-  await delay(4000);
-  console.log(`录音 ${voiceId} 转文字中 结束...`);
-
-  return translateResult;
+  return await translateResult;
 };
 
 // 获取签名
@@ -66,13 +87,7 @@ export const endRecognition: EndRecognition = ({
   onRecordEnd,
   onVoice2TextEnd,
 }) => {
-  // 模拟语音识别到的内容
-  // 在实际场景中 语音识别和语音转文字是2个独立的步骤 因此这里的实现会涉及到 异步操作
-
-  // 1. 当用用户触发结束语音识别时, 首先结束语音识别
-  // 2. 将语音识别的内容转换成文字
-  // 3. 回掉函数返回转换后的文字
-
+  // TODO: move out
   let cancellable: {
     promise: Promise<string>;
     cancel(): void;

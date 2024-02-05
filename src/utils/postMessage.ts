@@ -1,5 +1,5 @@
 export const postMessage = (
-  message: { type: string },
+  message: { type: string; text?: string },
   to: "parent" | "child"
 ) => {
   console.log("message", message);
